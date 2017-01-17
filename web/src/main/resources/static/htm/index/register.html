@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>魔方</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" charset="utf-8" content="欢迎来到魔方世界">
+    <meta name="keywords" charset="utf-8" content="魔方">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="icon" href="/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="/assets/css/lib/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/assets/css/lib/fontawesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="/assets/css/lib/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/assets/css/lib/lte/AdminLTE.min.css">
+    <link rel="stylesheet" href="/assets/css/lib/lte/skins/skin-blue-light.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/assets/plugins/iCheck/square/blue.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="/assets/js/lib/html5shiv.min.js"></script>
+    <script src="/assets/js/lib/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="hold-transition login-page skin-blue-light">
+<header class="main-header ">
+    <!-- Logo -->
+    <a href="/" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>魔</b>方</span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg"><b>魔</b>方</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle sr-only" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+
+        <div class="navbar-custom-menu sr-only">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/register" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<div class="login-box">
+    <div class="login-logo sr-only">
+        <a href="/"><b>魔方</b>小记</a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg">魔方小筑</p>
+
+        <form  name="form" role="form" id="register">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" placeholder="请输入昵称" v-model="userName">
+                <span class="glyphicon glyphicon-user form-control-feedback" ></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="email" class="form-control" placeholder="请输入邮箱" v-model="email">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" placeholder="请输入密码" v-model="password">
+                <span class="glyphicon glyphicon-lock form-control-feedback" ></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" placeholder="请再次输入密码" v-model="password2">
+                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <div class="col-xs-8">
+                    <div class="checkbox icheck">
+                        <label>
+                            <input type="checkbox"> 我同意该协议 <a href="#">协议</a>
+                        </label>
+                    </div>
+                </div>
+                <!-- /.col -->
+                <div class="col-xs-4" v-show="agree">
+                    <button type="button" class="btn btn-primary btn-block btn-flat" v-on:click="register">注册</button>
+                </div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+    <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery 2.2.3 -->
+<script src="/assets/plugins/jQuery/jquery-2.2.3.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="/assets/js/lib/bootstrap.min.js"></script>
+<!-- iCheck -->
+<script src="/assets/plugins/iCheck/icheck.min.js"></script>
+
+<!--vue-->
+<script type="application/javascript" src="/assets/js/lib/vue.js"></script>
+<script type="application/javascript" src="/assets/js/lib/vue-resource.js"></script>
+<script type="application/javascript" src="/assets/js/lib/md5.min.js"></script>
+<script>
+</script>
+<script type="application/javascript" src="/assets/js/project/register.js"></script>
+</body>
+</html>
