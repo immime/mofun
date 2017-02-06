@@ -1227,7 +1227,7 @@
                     $el.unbind(".inputmask");
                     $el.removeClass('focus.inputmask');
                     //bind events
-                    $el.closest('form').bind("submit", function () { //trigger change on submit if any
+                    $el.closest('register').bind("submit", function () { //trigger change on submit if any
                         if (valueOnFocus != getActiveBuffer().join('')) {
                             $el.change();
                         }

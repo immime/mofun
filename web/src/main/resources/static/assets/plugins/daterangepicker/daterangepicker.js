@@ -1439,7 +1439,7 @@
             //update the calendars so all clickable dates reflect the new time component
             this.updateCalendars();
 
-            //update the form inputs above the calendars with the new time
+            //update the register inputs above the calendars with the new time
             this.updateFormInputs();
 
             //re-render the time pickers because changing one selection can affect what's enabled in another

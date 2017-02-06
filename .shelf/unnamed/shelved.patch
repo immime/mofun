@@ -1,0 +1,520 @@
+Index: common/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- common/pom.xml	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ common/pom.xml	(revision )
+@@ -30,6 +30,11 @@
+             <artifactId>hibernate-validator</artifactId>
+             <version>5.2.4.Final</version>
+         </dependency>
++        <dependency>
++            <groupId>javax.mail</groupId>
++            <artifactId>mail</artifactId>
++            <version>1.4.7</version>
++        </dependency>
+     </dependencies>
+ <build>
+     <finalName>mofun-${artifactId}</finalName>
+Index: service/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/pom.xml	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/pom.xml	(revision )
+@@ -26,10 +26,15 @@
+             <version>1.1.1</version>
+         </dependency>
+ 
++        <!--<dependency>-->
++            <!--<groupId>org.postgresql</groupId>-->
++            <!--<artifactId>postgresql</artifactId>-->
++            <!--<scope>runtime</scope>-->
++        <!--</dependency>-->
+         <dependency>
+-            <groupId>org.postgresql</groupId>
+-            <artifactId>postgresql</artifactId>
+-            <scope>runtime</scope>
++            <groupId>mysql</groupId>
++            <artifactId>mysql-connector-java</artifactId>
++            <version>5.1.40</version>
+         </dependency>
+         <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+         <dependency>
+Index: service/src/main/resources/script/dxl.sql
+===================================================================
+--- service/src/main/resources/script/dxl.sql	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/src/main/resources/script/postgres/dxl.sql	(revision )
+@@ -1,0 +1,0 @@
+Index: service/src/main/resources/generator/mysql.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/src/main/resources/generator/mysql.xml	(revision )
++++ service/src/main/resources/generator/mysql.xml	(revision )
+@@ -0,0 +1,48 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE generatorConfiguration PUBLIC
++        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
++        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
++<generatorConfiguration>
++
++    <!-- !!!! Driver Class Path !!!! -->
++    <classPathEntry location="D:\repo\mysql\mysql-connector-java\5.1.40\mysql-connector-java-5.1.40.jar"/>
++
++    <context id="context" targetRuntime="MyBatis3">
++        <plugin type="org.mybatis.generator.plugins.PaginationPlugin">
++            <property name="dialect" value="mysql"/>
++        </plugin>
++        <commentGenerator>
++            <property name="suppressAllComments" value="true"/>
++            <property name="suppressDate" value="true"/>
++        </commentGenerator>
++        <!-- !!!! Database Configurations !!!! -->
++        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://127.0.0.1:3306/mofun" userId="mofun" password="root"/>
++
++        <javaTypeResolver>
++            <property name="forceBigDecimals" value="false"/>
++        </javaTypeResolver>
++
++        <!-- !!!! Model Configurations !!!! -->
++        <javaModelGenerator targetPackage="com.mofun.domain" targetProject="mofun">
++            <property name="enableSubPackages" value="false"/>
++            <property name="trimStrings" value="true"/>
++        </javaModelGenerator>
++
++        <!-- !!!! Mapper XML Configurations !!!! -->
++        <sqlMapGenerator targetPackage="com.mofun.dao" targetProject="mofun">
++            <property name="enableSubPackages" value="false"/>
++        </sqlMapGenerator>
++
++        <!-- !!!! Mapper Interface Configurations !!!! -->
++        <javaClientGenerator targetPackage="com.mofun.dao" targetProject="mofun" type="XMLMAPPER">
++            <property name="enableSubPackages" value="false"/>
++        </javaClientGenerator>
++
++        <!-- !!!! Table Configurations !!!! -->
++        <table tableName="user">
++            <columnOverride column="id" javaType="java.lang.Long"/>
++            <columnOverride column="create_date" javaType="java.util.Date"/>
++            <columnOverride column="status" javaType="java.lang.String"/>
++        </table>
++    </context>
++</generatorConfiguration>
+\ No newline at end of file
+Index: service/src/main/java/com/mofun/config/MysqlConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/src/main/java/com/mofun/config/MysqlConfig.java	(revision )
++++ service/src/main/java/com/mofun/config/MysqlConfig.java	(revision )
+@@ -0,0 +1,106 @@
++package com.mofun.config;
++
++import com.alibaba.druid.pool.DruidDataSource;
++import com.mofun.constant.SqlConstant;
++import org.apache.ibatis.session.SqlSessionFactory;
++import org.mybatis.spring.SqlSessionFactoryBean;
++import org.mybatis.spring.SqlSessionTemplate;
++import org.mybatis.spring.annotation.MapperScan;
++import org.springframework.beans.factory.annotation.Value;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++import org.springframework.context.annotation.PropertySource;
++import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
++import org.springframework.core.io.support.ResourcePatternResolver;
++import org.springframework.jdbc.datasource.DataSourceTransactionManager;
++import org.springframework.transaction.PlatformTransactionManager;
++import org.springframework.transaction.annotation.EnableTransactionManagement;
++
++import javax.sql.DataSource;
++
++/**
++ * Created by runmain on 12/22/2016.
++ */
++@Configuration
++@PropertySource(value = "classpath:jdbc.properties")
++@EnableTransactionManagement
++@MapperScan("com.mofun.dao")
++public class MysqlConfig {
++
++    @Value("${mysql.jdbc.driveClass}")
++    private String dirver;
++    @Value("${mysql.jdbc.url}")
++    private String url;
++    @Value("${mysql.jdbc.username}")
++    private String username;
++    @Value("${mysql.jdbc.password}")
++    private String password;
++    @Value("${mysql.jdbc.maxActive}")
++    private Integer maxActive;
++    @Value("${mysql.jdbc.initialSize}")
++    private Integer initialSize;
++    @Value("${mysql.jdbc.maxWait}")
++    private Long maxWait;
++    @Value("${mysql.jdbc.minIdle}")
++    private Integer minIdle;
++    @Value("${mysql.jdbc.timeBetweenEvictionRunsMillis}")
++    private Long timeBetweenEvictionRunsMillis;
++    @Value("${mysql.jdbc.minEvictableIdleTimeMillis}")
++    private Long minEvictableIdleTimeMillis;
++    @Value("${mysql.jdbc.testWhileIdle}")
++    private Boolean testWhileIdle;
++    @Value("${mysql.jdbc.testOnBorrow}")
++    private Boolean testOnBorrow;
++    @Value("${mysql.jdbc.testOnReturn}")
++    private Boolean testOnReturn;
++
++    @Bean
++//    @ConditionalOnMissingBean(name = "sqlSessionFactory")
++    public DataSource dataSource() {
++        DruidDataSource dataSource = new DruidDataSource();
++        dataSource.setDriverClassName(dirver);
++        dataSource.setUrl(url);
++        dataSource.setUsername(username);
++        dataSource.setPassword(password);
++        dataSource.setMaxActive(maxActive);
++        dataSource.setInitialSize(initialSize);
++        dataSource.setMaxWait(maxWait);
++        dataSource.setMinIdle(minIdle);
++        dataSource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
++        dataSource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
++        dataSource.setTestWhileIdle(testWhileIdle);
++        dataSource.setTestOnBorrow(testOnBorrow);
++        dataSource.setTestOnReturn(testOnReturn);
++        dataSource.setValidationQuery(" select now(); ");
++        return dataSource;
++    }
++
++    @Bean(name = "sqlSessionFactory")
++    public SqlSessionFactory sqlSessionFactory() {
++        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
++        sqlSessionFactoryBean.setDataSource(dataSource());
++        //添加插件
++//        sqlSessionFactoryBean.setPlugins(new Interceptor[]{pageInterceptor});
++
++        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
++        try {
++            sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
++            return sqlSessionFactoryBean.getObject();
++        } catch (Exception e) {
++            throw new RuntimeException(e);
++
++        }
++
++    }
++
++    @Bean
++    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
++        return new SqlSessionTemplate(sqlSessionFactory);
++    }
++
++    @Bean(name = SqlConstant.TRANSACTION_MANAGER_NAME)
++    public PlatformTransactionManager transactionManager() {
++        return new DataSourceTransactionManager(dataSource());
++    }
++
++}
+Index: service/src/main/resources/dev/jdbc.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>NATIVE_TO_ASCII_UTF-8
+===================================================================
+--- service/src/main/resources/dev/jdbc.properties	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/src/main/resources/dev/jdbc.properties	(revision )
+@@ -1,14 +1,30 @@
+ #############dev
+-postgres.jdbc.driveClass=org.postgresql.Driver
+-postgres.jdbc.url=jdbc:postgresql://localhost:5432/plan
+-postgres.jdbc.username=root
+-postgres.jdbc.password=root
+-postgres.jdbc.maxActive=120
+-postgres.jdbc.initialSize=10
+-postgres.jdbc.maxWait=60000
+-postgres.jdbc.minIdle=1
+-postgres.jdbc.timeBetweenEvictionRunsMillis=60000
+-postgres.jdbc.minEvictableIdleTimeMillis=30000
+-postgres.jdbc.testWhileIdle=true
+-postgres.jdbc.testOnBorrow=false
+-postgres.jdbc.testOnReturn=false
++#postgres.jdbc.driveClass=org.postgresql.Driver
++#postgres.jdbc.url=jdbc:postgresql://localhost:5432/plan
++#postgres.jdbc.username=root
++#postgres.jdbc.password=root
++#postgres.jdbc.maxActive=120
++#postgres.jdbc.initialSize=10
++#postgres.jdbc.maxWait=60000
++#postgres.jdbc.minIdle=1
++#postgres.jdbc.timeBetweenEvictionRunsMillis=60000
++#postgres.jdbc.minEvictableIdleTimeMillis=30000
++#postgres.jdbc.testWhileIdle=true
++#postgres.jdbc.testOnBorrow=false
++#postgres.jdbc.testOnReturn=false
++
++
++#############dev
++mysql.jdbc.driveClass=com.mysql.jdbc.Driver
++mysql.jdbc.url=jdbc:mysql://localhost:3306/mofun
++mysql.jdbc.username=mofun
++mysql.jdbc.password=root
++mysql.jdbc.maxActive=120
++mysql.jdbc.initialSize=10
++mysql.jdbc.maxWait=60000
++mysql.jdbc.minIdle=1
++mysql.jdbc.timeBetweenEvictionRunsMillis=60000
++mysql.jdbc.minEvictableIdleTimeMillis=30000
++mysql.jdbc.testWhileIdle=true
++mysql.jdbc.testOnBorrow=false
++mysql.jdbc.testOnReturn=false
+Index: service/src/main/resources/script/msyql/dxl.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/src/main/resources/script/msyql/dxl.sql	(revision )
++++ service/src/main/resources/script/msyql/dxl.sql	(revision )
+@@ -0,0 +1,18 @@
++CREATE DATABASE IF NOT EXISTS mofun
++  DEFAULT CHARSET utf8
++  COLLATE utf8_general_ci;
++CREATE USER mofun@'%'
++  IDENTIFIED BY 'root';
++GRANT ALL PRIVILEGES ON mofun.* TO mofun;
++
++
++CREATE TABLE mofun.user
++(
++  id           BIGINT PRIMARY KEY AUTO_INCREMENT,
++  user_name    VARCHAR(20)  NOT NULL,
++  user_pwd     VARCHAR(100) NOT NULL,
++  mobile_phone VARCHAR(12)  NOT NULL,
++  email        VARCHAR(100),
++  create_date  TIMESTAMP,
++  status       CHAR(2)
++);
+\ No newline at end of file
+Index: service/src/main/java/com/mofun/config/PostgresConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/src/main/java/com/mofun/config/PostgresConfig.java	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/src/main/java/com/mofun/config/PostgresConfig.java	(revision )
+@@ -5,26 +5,22 @@
+ import org.apache.ibatis.session.SqlSessionFactory;
+ import org.mybatis.spring.SqlSessionFactoryBean;
+ import org.mybatis.spring.SqlSessionTemplate;
+-import org.mybatis.spring.annotation.MapperScan;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.context.annotation.Bean;
+-import org.springframework.context.annotation.Configuration;
+-import org.springframework.context.annotation.PropertySource;
+ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+ import org.springframework.core.io.support.ResourcePatternResolver;
+ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+ import org.springframework.transaction.PlatformTransactionManager;
+-import org.springframework.transaction.annotation.EnableTransactionManagement;
+ 
+ import javax.sql.DataSource;
+ 
+ /**
+  * Created by runmain on 12/22/2016.
+  */
+-@Configuration
+-@PropertySource(value = "classpath:jdbc.properties")
+-@EnableTransactionManagement
+-@MapperScan("com.mofun.dao")
++//@Configuration
++//@PropertySource(value = "classpath:jdbc.properties")
++//@EnableTransactionManagement
++//@MapperScan("com.mofun.dao")
+ public class PostgresConfig {
+ 
+     @Value("${postgres.jdbc.driveClass}")
+Index: service/src/main/resources/mapper/UserMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- service/src/main/resources/mapper/UserMapper.xml	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/src/main/resources/mapper/UserMapper.xml	(revision )
+@@ -2,13 +2,13 @@
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ <mapper namespace="com.mofun.dao.UserMapper" >
+   <resultMap id="BaseResultMap" type="com.mofun.domain.User" >
+-    <id column="id" property="id" jdbcType="INTEGER" />
++    <id column="id" property="id" jdbcType="BIGINT" />
+     <result column="user_name" property="userName" jdbcType="VARCHAR" />
+     <result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+     <result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR" />
+     <result column="email" property="email" jdbcType="VARCHAR" />
+     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+-    <result column="status" property="status" jdbcType="VARCHAR" />
++    <result column="status" property="status" jdbcType="CHAR" />
+   </resultMap>
+   <sql id="Example_Where_Clause" >
+     <where >
+@@ -77,46 +77,46 @@
+       distinct
+     </if>
+     <include refid="Base_Column_List" />
+-    from public.user
++    from user
+     <if test="_parameter != null" >
+       <include refid="Example_Where_Clause" />
+     </if>
+     <if test="orderByClause != null" >
+       order by ${orderByClause}
+     </if>
+-    <include refid="Sql_Pagination" />
++    <include refid="MySql_Pagination" />
+   </select>
+   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+     select 
+     <include refid="Base_Column_List" />
+-    from public.user
+-    where id = #{id,jdbcType=INTEGER}
++    from user
++    where id = #{id,jdbcType=BIGINT}
+   </select>
+-  <sql id="Sql_Pagination" >
++  <sql id="MySql_Pagination" >
+     <if test="offset != -1 &amp;&amp; rows != -1" >
+-       LIMIT #{rows} OFFSET #{offset}
++      limit #{offset}, #{rows}
+     </if>
+   </sql>
+   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+-    delete from public.user
+-    where id = #{id,jdbcType=INTEGER}
++    delete from user
++    where id = #{id,jdbcType=BIGINT}
+   </delete>
+   <delete id="deleteByExample" parameterType="com.mofun.domain.UserExample" >
+-    delete from public.user
++    delete from user
+     <if test="_parameter != null" >
+       <include refid="Example_Where_Clause" />
+     </if>
+   </delete>
+   <insert id="insert" parameterType="com.mofun.domain.User" >
+-    insert into public.user (user_name, user_pwd,
++    insert into user (id, user_name, user_pwd, 
+       mobile_phone, email, create_date, 
+       status)
+-    values (#{userName,jdbcType=VARCHAR}, #{userPwd,jdbcType=VARCHAR},
++    values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{userPwd,jdbcType=VARCHAR}, 
+       #{mobilePhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+-      #{status,jdbcType=VARCHAR})
++      #{status,jdbcType=CHAR})
+   </insert>
+   <insert id="insertSelective" parameterType="com.mofun.domain.User" >
+-    insert into public.user
++    insert into user
+     <trim prefix="(" suffix=")" suffixOverrides="," >
+       <if test="id != null" >
+         id,
+@@ -142,7 +142,7 @@
+     </trim>
+     <trim prefix="values (" suffix=")" suffixOverrides="," >
+       <if test="id != null" >
+-        #{id,jdbcType=INTEGER},
++        #{id,jdbcType=BIGINT},
+       </if>
+       <if test="userName != null" >
+         #{userName,jdbcType=VARCHAR},
+@@ -160,21 +160,21 @@
+         #{createDate,jdbcType=TIMESTAMP},
+       </if>
+       <if test="status != null" >
+-        #{status,jdbcType=VARCHAR},
++        #{status,jdbcType=CHAR},
+       </if>
+     </trim>
+   </insert>
+   <select id="countByExample" parameterType="com.mofun.domain.UserExample" resultType="java.lang.Integer" >
+-    select count(*) from public.user
++    select count(*) from user
+     <if test="_parameter != null" >
+       <include refid="Example_Where_Clause" />
+     </if>
+   </select>
+   <update id="updateByExampleSelective" parameterType="map" >
+-    update public.user
++    update user
+     <set >
+       <if test="record.id != null" >
+-        id = #{record.id,jdbcType=INTEGER},
++        id = #{record.id,jdbcType=BIGINT},
+       </if>
+       <if test="record.userName != null" >
+         user_name = #{record.userName,jdbcType=VARCHAR},
+@@ -192,7 +192,7 @@
+         create_date = #{record.createDate,jdbcType=TIMESTAMP},
+       </if>
+       <if test="record.status != null" >
+-        status = #{record.status,jdbcType=VARCHAR},
++        status = #{record.status,jdbcType=CHAR},
+       </if>
+     </set>
+     <if test="_parameter != null" >
+@@ -200,20 +200,20 @@
+     </if>
+   </update>
+   <update id="updateByExample" parameterType="map" >
+-    update public.user
+-    set id = #{record.id,jdbcType=INTEGER},
++    update user
++    set id = #{record.id,jdbcType=BIGINT},
+       user_name = #{record.userName,jdbcType=VARCHAR},
+       user_pwd = #{record.userPwd,jdbcType=VARCHAR},
+       mobile_phone = #{record.mobilePhone,jdbcType=VARCHAR},
+       email = #{record.email,jdbcType=VARCHAR},
+       create_date = #{record.createDate,jdbcType=TIMESTAMP},
+-      status = #{record.status,jdbcType=VARCHAR}
++      status = #{record.status,jdbcType=CHAR}
+     <if test="_parameter != null" >
+       <include refid="Update_By_Example_Where_Clause" />
+     </if>
+   </update>
+   <update id="updateByPrimaryKeySelective" parameterType="com.mofun.domain.User" >
+-    update public.user
++    update user
+     <set >
+       <if test="userName != null" >
+         user_name = #{userName,jdbcType=VARCHAR},
+@@ -231,19 +231,19 @@
+         create_date = #{createDate,jdbcType=TIMESTAMP},
+       </if>
+       <if test="status != null" >
+-        status = #{status,jdbcType=VARCHAR},
++        status = #{status,jdbcType=CHAR},
+       </if>
+     </set>
+-    where id = #{id,jdbcType=INTEGER}
++    where id = #{id,jdbcType=BIGINT}
+   </update>
+   <update id="updateByPrimaryKey" parameterType="com.mofun.domain.User" >
+-    update public.user
++    update user
+     set user_name = #{userName,jdbcType=VARCHAR},
+       user_pwd = #{userPwd,jdbcType=VARCHAR},
+       mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+       email = #{email,jdbcType=VARCHAR},
+       create_date = #{createDate,jdbcType=TIMESTAMP},
+-      status = #{status,jdbcType=VARCHAR}
+-    where id = #{id,jdbcType=INTEGER}
++      status = #{status,jdbcType=CHAR}
++    where id = #{id,jdbcType=BIGINT}
+   </update>
+ </mapper>
+\ No newline at end of file
+Index: service/src/main/resources/script/other.sql
+===================================================================
+--- service/src/main/resources/script/other.sql	(revision 6eb47cc5fb8879d6b831d99e56901bedce691174)
++++ service/src/main/resources/script/postgres/other.sql	(revision )
+@@ -1,0 +1,0 @@

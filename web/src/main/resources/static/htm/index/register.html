@@ -7,7 +7,7 @@
     <meta name="description" charset="utf-8" content="欢迎来到魔方世界">
     <meta name="keywords" charset="utf-8" content="魔方">
     <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <link rel="icon" href="/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
     <!-- Bootstrap 3.3.6 -->
@@ -61,24 +61,32 @@
     <div class="login-box-body">
         <p class="login-box-msg">魔方小筑</p>
 
-        <form  name="form" role="form" id="register">
+        <form name="form" role="form" id="register">
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" placeholder="请输入昵称" v-model="userName">
-                <span class="glyphicon glyphicon-user form-control-feedback" ></span>
+                <input type="text" class="form-control" placeholder="请输入昵称" v-model="user.userName">
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="email" class="form-control" placeholder="请输入邮箱" v-model="email">
+                <input type="text" class="form-control" placeholder="请输入手机号" v-model="user.mobilePhone">
+                <span class="glyphicon glyphicon-earphone form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="email" class="form-control" placeholder="请输入邮箱" v-model="user.email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="请输入密码" v-model="password">
-                <span class="glyphicon glyphicon-lock form-control-feedback" ></span>
+                <input type="password" class="form-control" placeholder="请输入密码(长度6-15)" v-model="user.password">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="请再次输入密码" v-model="password2">
+                <input type="password" class="form-control" placeholder="请再次输入密码(长度6-15)" v-model="user.pwdConfirm">
                 <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
             </div>
-            <div class="row">
+            <div class="form-group" style="height: 34px">
+               <div style="float: left;width: 70%"> <input type="text" class="form-control" placeholder="请输入验证码" v-model="user.imageCode" ></div>
+               <div style="float: right;width: 30%"> <image v-bind:src="authUrl" v-on:click="freshCode" style="height: 34px;vertical-align: middle;width: 100%"></image></div>
+            </div>
+            <div class="row" style="clear: both;margin-top: 5px">
                 <div class="col-xs-8">
                     <div class="checkbox icheck">
                         <label>
@@ -87,11 +95,12 @@
                     </div>
                 </div>
                 <!-- /.col -->
-                <div class="col-xs-4" v-show="agree">
-                    <button type="button" class="btn btn-primary btn-block btn-flat" v-on:click="register">注册</button>
+                <div class="col-xs-4" v-show="user.agree">
+                    <button type="button" class="btn btn-primary btn-block " v-on:click="register">注册</button>
                 </div>
                 <!-- /.col -->
             </div>
+
         </form>
     </div>
     <!-- /.login-box-body -->

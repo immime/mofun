@@ -5,49 +5,53 @@ import com.mofun.constant.SqlConstant;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
 /**
  * Created by runmain on 12/22/2016.
  */
-//@Configuration
-//@PropertySource(value = "classpath:jdbc.properties")
-//@EnableTransactionManagement
-//@MapperScan("com.mofun.dao")
-public class PostgresConfig {
+@Configuration
+@PropertySource(value = "classpath:jdbc.properties")
+@EnableTransactionManagement
+@MapperScan("com.mofun.dao")
+public class MysqlConfig {
 
-    @Value("${postgres.jdbc.driveClass}")
+    @Value("${mysql.jdbc.driveClass}")
     private String dirver;
-    @Value("${postgres.jdbc.url}")
+    @Value("${mysql.jdbc.url}")
     private String url;
-    @Value("${postgres.jdbc.username}")
+    @Value("${mysql.jdbc.username}")
     private String username;
-    @Value("${postgres.jdbc.password}")
+    @Value("${mysql.jdbc.password}")
     private String password;
-    @Value("${postgres.jdbc.maxActive}")
+    @Value("${mysql.jdbc.maxActive}")
     private Integer maxActive;
-    @Value("${postgres.jdbc.initialSize}")
+    @Value("${mysql.jdbc.initialSize}")
     private Integer initialSize;
-    @Value("${postgres.jdbc.maxWait}")
+    @Value("${mysql.jdbc.maxWait}")
     private Long maxWait;
-    @Value("${postgres.jdbc.minIdle}")
+    @Value("${mysql.jdbc.minIdle}")
     private Integer minIdle;
-    @Value("${postgres.jdbc.timeBetweenEvictionRunsMillis}")
+    @Value("${mysql.jdbc.timeBetweenEvictionRunsMillis}")
     private Long timeBetweenEvictionRunsMillis;
-    @Value("${postgres.jdbc.minEvictableIdleTimeMillis}")
+    @Value("${mysql.jdbc.minEvictableIdleTimeMillis}")
     private Long minEvictableIdleTimeMillis;
-    @Value("${postgres.jdbc.testWhileIdle}")
+    @Value("${mysql.jdbc.testWhileIdle}")
     private Boolean testWhileIdle;
-    @Value("${postgres.jdbc.testOnBorrow}")
+    @Value("${mysql.jdbc.testOnBorrow}")
     private Boolean testOnBorrow;
-    @Value("${postgres.jdbc.testOnReturn}")
+    @Value("${mysql.jdbc.testOnReturn}")
     private Boolean testOnReturn;
 
     @Bean

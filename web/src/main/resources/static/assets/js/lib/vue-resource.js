@@ -848,7 +848,7 @@ function body (request, next) {
 
         if (request.emulateJSON) {
             request.body = Url.params(request.body);
-            request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+            request.headers.set('Content-Type', 'application/x-www-register-urlencoded');
         } else {
             request.body = JSON.stringify(request.body);
         }
